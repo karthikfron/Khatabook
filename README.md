@@ -74,7 +74,10 @@ It features secure authentication (via [DummyJSON Auth](https://dummyjson.com/do
    ```bash
    git clone https://github.com/karthikfron/Khatabook.git
    cd Khatabook
+   
 2.**Install Dependencies**
+  ```bash
      npm install
 3.**Start development server**
+   ```bash
      npm run dev
