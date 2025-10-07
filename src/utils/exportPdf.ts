@@ -1,6 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { toast } from "sonner";
+// import { useTranslation } from "react-i18next";
 
 interface Transaction {
     id: number;
@@ -26,6 +27,7 @@ interface Customer {
 }
 
 export function exportCustomerPDF(customer: Customer) {
+     
     try {
         const doc = new jsPDF();
 

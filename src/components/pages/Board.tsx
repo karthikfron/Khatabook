@@ -19,6 +19,7 @@ import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import PeopleIcon from "@mui/icons-material/People";
 import ReportIcon from "@mui/icons-material/Report";
 import SearchIcon from "@mui/icons-material/Search";
+import { useTranslation } from "react-i18next";
 
 export interface Transaction {
   id: number;
@@ -27,7 +28,7 @@ export interface Transaction {
   amount: number;
   date?: string;
   dueDate?: string;
-  status?: string;
+  status?: string; // "Overdue" | "Updated" | "Paid" | etc.
 }
 
 export interface Customer {
@@ -39,9 +40,23 @@ export interface Customer {
   totalCredit: number;
   balance: number;
   dueDate: string;
-  status: string;
+  status: string; // "Overdue" | "Updated" | "Paid"
   transactions: Transaction[];
 }
+
+// Map status to translation keys
+const statusKey = (status: string) => {
+  switch (status) {
+    case "Overdue":
+      return "overdue";
+    case "Updated":
+      return "updated";
+    case "Paid":
+      return "paid";
+    default:
+      return status; // fallback, could add more
+  }
+};
 
 const initialCustomers: Customer[] = [
   {
@@ -64,7 +79,7 @@ const initialCustomers: Customer[] = [
         dueDate: "2025-04-28",
         status: "Overdue",
       },
-      { id: 102, type: "repayment", amount: 100, date: "2025-04-15" },
+      { id: 102, type: "repayment", amount: 100, date: "2025-04-15", status: "Updated" },
     ],
   },
   {
@@ -196,13 +211,15 @@ const initialCustomers: Customer[] = [
         dueDate: "2025-05-02",
         status: "Overdue",
       },
-      { id: 702, type: "repayment", amount: 250, date: "2025-04-25" },
+      { id: 702, type: "repayment", amount: 250, date: "2025-04-25", status: "Updated" },
     ],
   },
 ];
+
 type FormType = "customer" | "loan" | "payment" | null;
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const [customers, setCustomers] = useState<Customer[]>(initialCustomers);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer>(
     initialCustomers[0]
@@ -353,7 +370,8 @@ export default function Dashboard() {
                   : "bg-green-100 text-green-700 dark:bg-green-200 dark:text-green-700"
               }`}
             >
-              {selectedCustomer.status}
+              {/* Internationalize status */}
+              {t(statusKey(selectedCustomer.status))}
             </span>
           </div>
         </div>
@@ -384,50 +402,55 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-700 dark:text-gray-300 text-sm">
         <div className="space-y-2">
           <p>
-            <strong>Joined:</strong> {selectedCustomer.joinDate}
+            <strong>{t("joined")}:</strong> {selectedCustomer.joinDate}
           </p>
           <p>
-            <strong>Phone:</strong> {selectedCustomer.contact.phone}
+            <strong>{t("phone")}:</strong> {selectedCustomer.contact.phone}
           </p>
           <p>
-            <strong>Address:</strong> {selectedCustomer.address}
+            <strong>{t("address")}:</strong> {selectedCustomer.address}
           </p>
         </div>
         <div className="space-y-2">
           <p>
-            <strong>Total Credit:</strong> ₹{selectedCustomer.totalCredit}
+            <strong>{t("total_credit")}:</strong> ₹{selectedCustomer.totalCredit}
           </p>
           <p>
-            <strong>Next Due:</strong> {selectedCustomer.dueDate}
+            <strong>{t("next_due")}:</strong> {selectedCustomer.dueDate}
           </p>
         </div>
       </div>
 
       <button
-        onClick={() => exportCustomerPDF(selectedCustomer)}
+        onClick={() => exportCustomerPDF(selectedCustomer, t)}
         className="mt-4 flex items-center bg-teal-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600 transition-colors"
       >
         <PictureAsPdfIcon fontSize="small" className="mr-2" />
-        Export
+        {t("export")}
       </button>
 
       <hr className="border-t-2 border-dashed border-gray-300 dark:border-gray-600 my-5" />
 
       <div className="text-sm">
         <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
-          Transactions
+          {t("transactions")}
         </h4>
         <ul className="divide-y divide-gray-200 dark:divide-gray-700 text-gray-700 dark:text-gray-300">
-          {selectedCustomer.transactions.map((t) => (
-            <li key={t.id} className="py-2">
+          {selectedCustomer.transactions.map((txn) => (
+            <li key={txn.id} className="py-2">
               <div className="flex justify-between">
                 <span className="font-medium">
-                  {t.type === "loan" ? t.item : "Repayment"}
+                  {txn.type === "loan" ? txn.item : t("repayment")}
                 </span>
-                <span>₹{t.amount}</span>
+                <span>₹{txn.amount}</span>
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400">
-                {t.type === "loan" ? `Due ${t.dueDate}` : `On ${t.date}`}
+                {txn.type === "loan"
+                  ? `${t("due")} ${txn.dueDate}`
+                  : `${t("on")} ${txn.date}`}
+                {txn.status && (
+                  <span> · {t(statusKey(txn.status))}</span>
+                )}
               </div>
             </li>
           ))}
@@ -449,7 +472,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 font-medium">
-                    Customers
+                    {t("customers")}
                   </p>
                   <p className="mt-0.5 text-xl sm:text-2xl font-bold text-teal-900 dark:text-gray-300">
                     {totalCustomers}
@@ -465,7 +488,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 font-medium">
-                    Credit Given
+                    {t("credit_given")}
                   </p>
                   <p className="mt-0.5 text-xl sm:text-2xl font-bold text-teal-900 dark:text-gray-300">
                     ₹{totalCreditGiven}
@@ -481,7 +504,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 font-medium">
-                    Outstanding
+                    {t("outstanding")}
                   </p>
                   <p className="mt-0.5 text-xl sm:text-2xl font-bold text-teal-900 dark:text-gray-300">
                     ₹{totalOutstanding}
@@ -497,7 +520,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 font-medium">
-                    Overdue
+                    {t("overdue")}
                   </p>
                   <p className="mt-0.5 text-xl sm:text-2xl font-bold text-teal-900 dark:text-gray-300">
                     ₹{totalOverdue}
@@ -509,13 +532,13 @@ export default function Dashboard() {
 
           <div className="flex flex-col sm:flex-row justify-between items-center mb-5 gap-4">
             <h2 className="text-2xl font-bold text-teal-700 dark:text-teal-300">
-              Customers
+              {t("customers")}
             </h2>
             <div className="relative">
               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-teal-400 dark:text-gray-300" />
               <input
                 type="text"
-                placeholder="Enter user name"
+                placeholder={t("enter_user_name")}
                 className="pl-10 py-1.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-600 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-teal-500 transition"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -528,16 +551,16 @@ export default function Dashboard() {
               <thead className="bg-teal-200 dark:bg-teal-800">
                 <tr>
                   <th className="px-6 py-3 text-left text-sm font-medium text-teal-700 dark:text-teal-300">
-                    Name
+                    {t("name")}
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium text-teal-700 dark:text-teal-300">
-                    Balance
+                    {t("balance")}
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium text-teal-700 dark:text-teal-300 hidden sm:table-cell">
-                    Next Due
+                    {t("next_due")}
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium text-teal-700 dark:text-teal-300">
-                    Status
+                    {t("status")}
                   </th>
                 </tr>
               </thead>
@@ -565,7 +588,7 @@ export default function Dashboard() {
                             : "bg-green-100 text-green-700 dark:bg-green-200 dark:text-green-700"
                         }`}
                       >
-                        {c.status}
+                        {t(statusKey(c.status))}
                       </span>
                     </td>
                   </tr>
@@ -585,7 +608,7 @@ export default function Dashboard() {
             >
               <PersonAddAltIcon className="text-teal-700 dark:text-teal-300" />
               <span className="font-medium text-gray-700 dark:text-gray-100">
-                Add Customer
+                {t("add_customer")}
               </span>
             </div>
             <div
@@ -594,7 +617,7 @@ export default function Dashboard() {
             >
               <ReceiptLongIcon className="text-teal-700 dark:text-teal-300" />
               <span className="font-medium text-gray-700 dark:text-gray-100">
-                Add Loan
+                {t("add_loan")}
               </span>
             </div>
           </div>
@@ -605,7 +628,7 @@ export default function Dashboard() {
           >
             <CurrencyRupeeIcon className="text-teal-700 dark:text-teal-300" />
             <span className="font-medium text-gray-700 dark:text-gray-100">
-              Record Repayment
+              {t("record_repayment")}
             </span>
           </div>
         </aside>
@@ -618,13 +641,13 @@ export default function Dashboard() {
         maxWidth="sm"
       >
         <DialogTitle>
-          {expandedForm === "customer" && "Add New Customer"}
-          {expandedForm === "loan" && "Record New Loan"}
-          {expandedForm === "payment" && "Record Repayment"}
+          {expandedForm === "customer" && t("add_new_customer")}
+          {expandedForm === "loan" && t("record_new_loan")}
+          {expandedForm === "payment" && t("record_repayment")}
         </DialogTitle>
         <DialogContent dividers>{renderForm()}</DialogContent>
         <DialogActions>
-          <Button onClick={closeForm}>Cancel</Button>
+          <Button onClick={closeForm}>{t("cancel")}</Button>
         </DialogActions>
       </Dialog>
     </div>

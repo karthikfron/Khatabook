@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Transaction } from "../pages/Board";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   onSubmit: (loan: Transaction) => void;
@@ -14,6 +15,8 @@ type LoanFormInputs = {
 };
 
 export default function AddLoanForm({ onSubmit, closeModal }: Props) {
+  const { t } = useTranslation();
+
   const {
     register,
     handleSubmit,
@@ -33,10 +36,10 @@ export default function AddLoanForm({ onSubmit, closeModal }: Props) {
       amount,
       date: new Date().toISOString().split("T")[0],
       dueDate: data.dueDate,
-      status: dueTime < now ? "Overdue" : "Up-to-date",
+      status: dueTime < now ? t("overdue") : t("up_to_date"),
     });
 
-    toast.success("Loan added successfully");
+    toast.success(t("loan_added_successfully"));
     closeModal?.();
     reset();
   };
@@ -44,8 +47,8 @@ export default function AddLoanForm({ onSubmit, closeModal }: Props) {
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
       <input
-        {...register("item", { required: "Item is required" })}
-        placeholder="Item"
+        {...register("item", { required: t("item_required") })}
+        placeholder={t("item")}
         className="w-full border p-2 rounded"
       />
       {errors.item && (
@@ -55,10 +58,10 @@ export default function AddLoanForm({ onSubmit, closeModal }: Props) {
       <input
         type="number"
         {...register("amount", {
-          required: "Amount is required",
-          min: { value: 1, message: "Enter valid amount" },
+          required: t("amount_required"),
+          min: { value: 1, message: t("enter_valid_amount") },
         })}
-        placeholder="Amount"
+        placeholder={t("amount")}
         className="w-full border p-2 rounded"
       />
       {errors.amount && (
@@ -67,7 +70,7 @@ export default function AddLoanForm({ onSubmit, closeModal }: Props) {
 
       <input
         type="date"
-        {...register("dueDate", { required: "Due date is required" })}
+        {...register("dueDate", { required: t("due_date_required") })}
         className="w-full border p-2 rounded"
       />
       {errors.dueDate && (
@@ -78,7 +81,7 @@ export default function AddLoanForm({ onSubmit, closeModal }: Props) {
         type="submit"
         className="w-full bg-teal-600 text-white py-2 rounded hover:bg-teal-700"
       >
-        Add Loan
+        {t("add_loan")}
       </button>
     </form>
   );

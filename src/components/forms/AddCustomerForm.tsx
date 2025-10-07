@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Customer } from "../pages/Board";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   onSubmit: (newCustomer: Customer) => void;
@@ -15,6 +16,7 @@ type CustomerFormInputs = {
 };
 
 export default function AddCustomerForm({ onSubmit, closeModal }: Props) {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -33,12 +35,12 @@ export default function AddCustomerForm({ onSubmit, closeModal }: Props) {
       totalCredit: 2000,
       balance: 0,
       dueDate: "—",
-      status: "Up-to-date",
+      status: t("up_to_date"),
       transactions: [],
     };
 
     onSubmit(newCustomer);
-    toast.success("Customer added successfully");
+    toast.success(t("customer_added_successfully"));
     closeModal?.();
     reset();
   };
@@ -46,8 +48,8 @@ export default function AddCustomerForm({ onSubmit, closeModal }: Props) {
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
       <input
-        {...register("name", { required: "Name is required" })}
-        placeholder="Name"
+        {...register("name", { required: t("name_required") })}
+        placeholder={t("name")}
         className="w-full border p-2 rounded"
       />
       {errors.name && (
@@ -56,10 +58,10 @@ export default function AddCustomerForm({ onSubmit, closeModal }: Props) {
 
       <input
         {...register("email", {
-          required: "Email is required",
-          pattern: { value: /^\S+@\S+$/, message: "Invalid email" },
+          required: t("email_required"),
+          pattern: { value: /^\S+@\S+$/, message: t("invalid_email") },
         })}
-        placeholder="Email"
+        placeholder={t("email")}
         className="w-full border p-2 rounded"
       />
       {errors.email && (
@@ -68,10 +70,10 @@ export default function AddCustomerForm({ onSubmit, closeModal }: Props) {
 
       <input
         {...register("phone", {
-          required: "Phone is required",
-          minLength: { value: 10, message: "Enter valid phone" },
+          required: t("phone_required"),
+          minLength: { value: 10, message: t("enter_valid_phone") },
         })}
-        placeholder="Phone"
+        placeholder={t("phone")}
         className="w-full border p-2 rounded"
       />
       {errors.phone && (
@@ -79,8 +81,8 @@ export default function AddCustomerForm({ onSubmit, closeModal }: Props) {
       )}
 
       <input
-        {...register("address", { required: "Address is required" })}
-        placeholder="Address"
+        {...register("address", { required: t("address_required") })}
+        placeholder={t("address")}
         className="w-full border p-2 rounded"
       />
       {errors.address && (
@@ -91,7 +93,7 @@ export default function AddCustomerForm({ onSubmit, closeModal }: Props) {
         type="submit"
         className="w-full bg-teal-600 text-white py-2 rounded hover:bg-teal-700"
       >
-        Add Customer
+        {t("add_customer")}
       </button>
     </form>
   );
