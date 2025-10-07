@@ -422,7 +422,7 @@ export default function Dashboard() {
       </div>
 
       <button
-        onClick={() => exportCustomerPDF(selectedCustomer, t)}
+        onClick={() => exportCustomerPDF(selectedCustomer)}
         className="mt-4 flex items-center bg-teal-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600 transition-colors"
       >
         <PictureAsPdfIcon fontSize="small" className="mr-2" />

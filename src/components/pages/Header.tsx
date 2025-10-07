@@ -32,9 +32,11 @@ export default function Header() {
   };
 
 
-  const handleLanguageChange = (e) => {
-    i18n.changeLanguage(e.target.value);
-  };
+ const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const selectedLang = e.target.value;
+  i18n.changeLanguage(selectedLang);
+};
+
 
   return (
     <header className="bg-teal-600 dark:bg-teal-800 text-white px-6 py-2 flex items-center justify-between shadow-sm transition-colors">
