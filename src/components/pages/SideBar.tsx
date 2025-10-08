@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
+import CalculateIcon from "@mui/icons-material/Calculate";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
@@ -21,6 +22,7 @@ export default function Sidebar() {
     { to: "/dashboard", label: t("dashboard"), icon: DashboardIcon },
     { to: "/customers", label: t("customers"), icon: PeopleIcon },
     { to: "/add-customer", label: t("add_customer"), icon: AddCircleIcon },
+    { to: "/analytics", label: t("loan_simulator"), icon: CalculateIcon },
   ];
 
   return (
