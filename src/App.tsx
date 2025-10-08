@@ -11,7 +11,9 @@ import Login from "./components/Auth/Login";
 import Signup from "./components/Auth/SignUp";
 import Dashboard from "./components/pages/Board";
 import { Toaster } from "sonner";
+import LoanAnalytics from "./components/pages/LoanAnalytics";
 import NotFound from "./components/pages/NotFound";
+import "./i18n";
 
 function SecureLayout() {
   return (
@@ -42,6 +44,7 @@ export default function App() {
 
           <Route element={<SecureLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/analytics" element={<LoanAnalytics />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />
